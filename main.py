@@ -103,7 +103,7 @@ st.write(f"""
 {texto_performance_carteira}         
 
 ### Performance dos Ativos
-Essa for a performance das ações selecionadas no periodo selecionado.
+Essa foi a performance das ações selecionadas no periodo selecionado.
 {texto_performance}
 
 
