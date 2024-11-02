@@ -34,7 +34,7 @@ dados = carregar_dados(acoes)
 # prepara as visualizacoes - filtros
 st.sidebar.header("Filtros:")
 
-lista_acoes = st.sidebar.multiselect("Selecione as ações a exibir", dados.columns)
+lista_acoes = st.sidebar.multiselect("Selecione as ações para sua carteira", dados.columns)
 if lista_acoes:
     dados = dados[lista_acoes]
     if len(lista_acoes) == 1:
@@ -44,7 +44,7 @@ if lista_acoes:
 # filtros de datas
 data_inicial = dados.index.min().to_pydatetime()
 data_final = dados.index.max().to_pydatetime()
-intervalo_datas = st.sidebar.slider("Selecione o intervalo de datas:",
+intervalo_datas = st.sidebar.slider("Selecione o intervalo de datas:  \n",
                   min_value=data_inicial, max_value=data_final, value=(data_inicial, data_final), step=timedelta(days=1))
 
 dados = dados.loc[intervalo_datas[0]:intervalo_datas[1]] # .loc para selecionar por datas
@@ -90,17 +90,18 @@ performance_carteira = float(performance_carteira)
 
 
 if performance_carteira > 0:
-    texto_performance_carteira = f"  \nTotal para as ações selecionadas: :green[{performance_carteira:.1f}%]"
+    texto_performance_carteira = f"  \nTotal para as ações selecionadas:   :green[{performance_carteira:.1f}%]"
 elif performance_carteira < 0:
-    texto_performance_carteira = f"  \nTotal para as ações selecionadas: :red[{performance_carteira:.1f}%]"
+    texto_performance_carteira = f"  \nTotal para as ações selecionadas:   :red[{performance_carteira:.1f}%]"
 else:
-    texto_performance_carteira = f"  \nTotal para as ações selecionadas: {performance_carteira:.1f}%"
+    texto_performance_carteira = f"  \nTotal para as ações selecionadas:   {performance_carteira:.1f}%"
 
 
 
 st.write(f"""
 ### Performance da Carteira
-{texto_performance_carteira}         
+{texto_performance_carteira}
+Obs: podem ocorrer erros por falhas na base de dados. Correções em andamento.   
 
 ### Performance dos Ativos
 Performance para ações e período selecionado.
