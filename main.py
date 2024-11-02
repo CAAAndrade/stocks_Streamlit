@@ -15,7 +15,7 @@ def carregar_dados(empresas):
     
     texto_tickers = " ".join(empresas)
     dados_acao = yf.Tickers(texto_tickers)
-    cotacoes_acao = dados_acao.history(period="1d", start="2010-1-1", end=datetime.now())
+    cotacoes_acao = dados_acao.history(period="1d", start="2020-1-1", end=datetime.now())
     cotacoes_acao = cotacoes_acao["Close"]
     return cotacoes_acao
 
@@ -103,7 +103,7 @@ st.write(f"""
 {texto_performance_carteira}         
 
 ### Performance dos Ativos
-Essa foi a performance das ações selecionadas no periodo selecionado.
+Performance para ações e período selecionado.
 {texto_performance}
 
 
