@@ -101,7 +101,7 @@ else:
 st.write(f"""
 ### Performance da Carteira
 {texto_performance_carteira}
-Obs: podem ocorrer erros por falhas na base de dados. Correções em andamento.   
+  \nObs: podem ocorrer erros por falhas na base de dados. Correções em andamento.   
 
 ### Performance dos Ativos
 Performance para ações e período selecionado.
