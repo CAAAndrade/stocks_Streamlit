@@ -23,7 +23,7 @@ def carregar_dados(empresas):
 
 @st.cache_data
 def get_stocks_tickets(market):
-    base_tickers = pd.read_csv(f"{market}.csv", sep=",",header=0)
+    base_tickers = pd.read_csv(f"{market}.csv", sep=",", header=0)
     if market == "IBOV":
         tickers = base_tickers.iloc[:, 0].tolist()
         tickers = [item.rstrip(" ") + ".SA" for item in tickers]
@@ -31,11 +31,16 @@ def get_stocks_tickets(market):
         tickers = base_tickers.iloc[:, 0].tolist()
     return tickers
 
+
 @st.cache_data
 def get_stocks_name(market):
-    base_tickers = pd.read_csv(f"{market}.csv", sep=",",header=0)
-    company_name = base_tickers.iloc[:, 1].tolist()
-    return company_name
+    base_tickers = pd.read_csv(f"{market}.csv", sep=",", header=0)
+    tickers = base_tickers.iloc[:, 0].tolist()
+    tickers = [item.rstrip(" ") for item in tickers]
+    name = base_tickers.iloc[:, 1].tolist()
+    names = dict(zip(tickers, name))
+    return names
+
 
 # prepara as visualizacoes - filtros
 st.sidebar.header("Filtros:")
@@ -44,24 +49,34 @@ market = st.sidebar.selectbox("Selecione o mercado:", ("IBOV", "NASDAQ"))
 
 acoes = get_stocks_tickets(market)
 dados = carregar_dados(acoes)
-name = get_stocks_name(market)
+dic_names = get_stocks_name(market)
 
 
 
-lista_acoes = st.sidebar.multiselect("Selecione as ações para sua carteira", dados.columns)
+
+lista_acoes = st.sidebar.multiselect(
+    "Selecione as ações para sua carteira", dados.columns
+)
 if lista_acoes:
     dados = dados[lista_acoes]
     if len(lista_acoes) == 1:
         acao_unica = lista_acoes[0]
-        dados = dados.rename(columns={acao_unica:"Close"})
+        dados = dados.rename(columns={acao_unica: "Close"})
 
 # filtros de datas
 data_inicial = dados.index.min().to_pydatetime()
 data_final = dados.index.max().to_pydatetime()
-intervalo_datas = st.sidebar.slider("Selecione o intervalo de datas:  \n",
-                  min_value=data_inicial, max_value=data_final, value=(data_inicial, data_final), step=timedelta(days=1))
+intervalo_datas = st.sidebar.slider(
+    "Selecione o intervalo de datas:  \n",
+    min_value=data_inicial,
+    max_value=data_final,
+    value=(data_inicial, data_final),
+    step=timedelta(days=1),
+)
 
-dados = dados.loc[intervalo_datas[0]:intervalo_datas[1]] # .loc para selecionar por datas
+dados = dados.loc[
+    intervalo_datas[0] : intervalo_datas[1]
+]  # .loc para selecionar por datas
 # criar interface do streamlit
 st.write(""" 
          # App de Cotação de Ativos 
@@ -84,40 +99,45 @@ if len(lista_acoes) >= 1:
     carteira = [1000 for acao in lista_acoes]
     total_inicial_carteira = sum(carteira)
 
-
     for i, acao in enumerate(lista_acoes):
         performance = dados[acao].iloc[-1] / dados[acao].iloc[0] - 1
+        nome = dic_names[acao.split(".")[0]]
+        print(nome)
         performance = float(performance)
 
         carteira[i] = carteira[i] * (1 + performance)
 
-        if  math.isnan(performance) is False:
+        if math.isnan(performance) is False:
             if performance > 0:
-                texto_performance = texto_performance + f"  \n{acao}: :green[{performance:.1f}]%"
+                texto_performance = (
+                    texto_performance + f"  \n{acao} - Empresa: {nome}: :green[{performance:.1f}]%"
+                )
             elif performance < 0:
-                texto_performance = texto_performance + f"  \n{acao}: :red[{performance:.1f}%]"
+                texto_performance = (
+                    texto_performance + f"  \n{acao} - Empresa: {nome}: :red[{performance:.1f}%]"
+                )
             else:
-                texto_performance = texto_performance + f"  \n{acao}: {performance:.1f}%"
-
+                texto_performance = (
+                    texto_performance + f"  \n{acao} - Empresa: {nome}: {performance:.1f}%"
+                )
 
         total_final_carteira = sum(carteira)
         performance_carteira = total_final_carteira / total_inicial_carteira - 1
         performance_carteira = float(performance_carteira)
-
 
         if performance_carteira > 0:
             texto_performance_carteira = f"  \nTotal para as ações selecionadas:   :green[{performance_carteira:.1f}%]"
         elif performance_carteira < 0:
             texto_performance_carteira = f"  \nTotal para as ações selecionadas:   :red[{performance_carteira:.1f}%]"
         else:
-            texto_performance_carteira = f"  \nTotal para as ações selecionadas:   {performance_carteira:.1f}%"
-
-
+            texto_performance_carteira = (
+                f"  \nTotal para as ações selecionadas:   {performance_carteira:.1f}%"
+            )
 
     st.write(f"""
     ### Performance da Carteira
     {texto_performance_carteira}
-    \nObs: podem ocorrer erros por falhas na base de dados. Correções em andamento.   
+    \nObs: caso seja detecte algum erro ao mostar os dados, tente alterar o período para coincidir com valores no grafico 
     """)
     st.write(f"""
     #### Performance para ações e período selecionado.
