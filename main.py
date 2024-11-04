@@ -103,7 +103,6 @@ if len(lista_acoes) >= 1:
     for i, acao in enumerate(lista_acoes):
         performance = dados[acao].iloc[-1] / dados[acao].iloc[0] - 1
         nome = dic_names[acao.split(".")[0]]
-        print(nome)
         performance = float(performance)
 
         carteira[i] = carteira[i] * (1 + performance)
@@ -111,15 +110,15 @@ if len(lista_acoes) >= 1:
         if math.isnan(performance) is False:
             if performance > 0:
                 texto_performance = (
-                    texto_performance + f"  \n{acao} - Company Name: {nome}: :green[{performance:.1f}]%"
+                    texto_performance + f"  \n{acao} -  Current Value: {round((dados[acao].iloc[0]), 2)} - Company Name: {nome}: :green[{performance:.1f}]%"
                 )
             elif performance < 0:
                 texto_performance = (
-                    texto_performance + f"  \n{acao} - Company Name: {nome}: :red[{performance:.1f}%]"
+                    texto_performance + f"  \n{acao} -  Current Value: {round((dados[acao].iloc[0]), 2)} - Company Name: {nome}: :red[{performance:.1f}%]"
                 )
             else:
                 texto_performance = (
-                    texto_performance + f"  \n{acao} - Company Name: {nome}: {performance:.1f}%"
+                    texto_performance + f"  \n{acao} -  Current Value: {round((dados[acao].iloc[0]), 2)} - Company Name: {nome}: {performance:.1f}%"
                 )
 
         total_final_carteira = sum(carteira)
@@ -138,11 +137,10 @@ if len(lista_acoes) >= 1:
     st.write(f"""
     ### Performance for your portfolio.
     {texto_performance_carteira}
-    \nNote: If you detect an error when displaying the data, try changing the period to match the values ​​in the chart.
+    \nNote: If you detect an error when displaying the data, try changing the period to match the values in the chart.
     """)
     st.write(f"""
-    #### Performance for each share
-    
+    ### Performance for each share - Value in Local Currency
     {texto_performance}
 
 
