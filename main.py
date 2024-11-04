@@ -31,7 +31,7 @@ def get_stocks_tickets(market):
         tickers = base_tickers.iloc[:, 0].tolist()
     return tickers
 
-
+@st.cache_data
 def get_stocks_name(market):
     base_tickers = pd.read_csv(f"{market}.csv", sep=",",header=0)
     company_name = base_tickers.iloc[:, 1].tolist()
