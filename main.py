@@ -43,9 +43,9 @@ def get_stocks_name(market):
 
 
 # prepara as visualizacoes - filtros
-st.sidebar.header("Filtros:")
+st.sidebar.header("Filters:")
 
-market = st.sidebar.selectbox("Selecione o mercado:", ("IBOV", "NASDAQ"))
+market = st.sidebar.selectbox("Choose a market:", ("IBOV", "NASDAQ"))
 
 acoes = get_stocks_tickets(market)
 dados = carregar_dados(acoes)
@@ -55,7 +55,7 @@ dic_names = get_stocks_name(market)
 
 
 lista_acoes = st.sidebar.multiselect(
-    "Selecione as ações para sua carteira", dados.columns
+    "Choose stocks for your portfolio:", dados.columns
 )
 if lista_acoes:
     dados = dados[lista_acoes]
@@ -67,7 +67,7 @@ if lista_acoes:
 data_inicial = dados.index.min().to_pydatetime()
 data_final = dados.index.max().to_pydatetime()
 intervalo_datas = st.sidebar.slider(
-    "Selecione o intervalo de datas:  \n",
+    "Select a date range:  \n",
     min_value=data_inicial,
     max_value=data_final,
     value=(data_inicial, data_final),
@@ -79,14 +79,15 @@ dados = dados.loc[
 ]  # .loc para selecionar por datas
 # criar interface do streamlit
 st.write(""" 
-         # App de Cotação de Ativos 
-         O gráfico abaixo representa a evolução de cotação das acoes selecionadas.
+         # Equity Prices Analysis
+         Value in Local Currency  \n
+         The chart below shows the value variations for the selected shares.
          """)  # markdown
 
 # criar graficos
 if len(lista_acoes) == 0:
     st.line_chart()
-    st.write("Nenhuma ação selecionada")
+    st.write("No share selected")
 if len(lista_acoes) >= 1:
     st.line_chart(dados)
     # calculo de performance
@@ -110,15 +111,15 @@ if len(lista_acoes) >= 1:
         if math.isnan(performance) is False:
             if performance > 0:
                 texto_performance = (
-                    texto_performance + f"  \n{acao} - Empresa: {nome}: :green[{performance:.1f}]%"
+                    texto_performance + f"  \n{acao} - Company Name: {nome}: :green[{performance:.1f}]%"
                 )
             elif performance < 0:
                 texto_performance = (
-                    texto_performance + f"  \n{acao} - Empresa: {nome}: :red[{performance:.1f}%]"
+                    texto_performance + f"  \n{acao} - Company Name: {nome}: :red[{performance:.1f}%]"
                 )
             else:
                 texto_performance = (
-                    texto_performance + f"  \n{acao} - Empresa: {nome}: {performance:.1f}%"
+                    texto_performance + f"  \n{acao} - Company Name: {nome}: {performance:.1f}%"
                 )
 
         total_final_carteira = sum(carteira)
@@ -126,21 +127,21 @@ if len(lista_acoes) >= 1:
         performance_carteira = float(performance_carteira)
 
         if performance_carteira > 0:
-            texto_performance_carteira = f"  \nTotal para as ações selecionadas:   :green[{performance_carteira:.1f}%]"
+            texto_performance_carteira = f"  \nSummary for your portfolio:   :green[{performance_carteira:.1f}%]"
         elif performance_carteira < 0:
-            texto_performance_carteira = f"  \nTotal para as ações selecionadas:   :red[{performance_carteira:.1f}%]"
+            texto_performance_carteira = f"  \nSummary for your portfolio:   :red[{performance_carteira:.1f}%]"
         else:
             texto_performance_carteira = (
-                f"  \nTotal para as ações selecionadas:   {performance_carteira:.1f}%"
+                f"  \nSummary for your portfolio:   {performance_carteira:.1f}%"
             )
 
     st.write(f"""
-    ### Performance da Carteira
+    ### Performance for your portfolio.
     {texto_performance_carteira}
-    \nObs: caso seja detecte algum erro ao mostar os dados, tente alterar o período para coincidir com valores no grafico 
+    \nNote: If you detect an error when displaying the data, try changing the period to match the values ​​in the chart.
     """)
     st.write(f"""
-    #### Performance para ações e período selecionado.
+    #### Performance for each share
     
     {texto_performance}
 
